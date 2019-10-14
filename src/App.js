@@ -15,21 +15,20 @@ const App = () => {
       {/*    Learn React*/}
       {/*  </a>*/}
       {/*</header>*/}
-      <JsonHook request="http://hubris.media.mit.edu:5000/reorgs?limit=50"/>
-      {/*<JsonHook request="http://localhost:5000"/>*/}
+      <ReorgJson request="http://hubris.media.mit.edu:5000/reorgs?limit=50"/>
     </div>
   );
 }
 
-const JsonHook = (props) => {
+const ReorgJson = (props) => {
   /*
    * Handles all the API requests and returns the raw JSON.
    * Functional component.
    */
 
-  // instantiate a state to store the JSON; parameter is what to store it in
-  // called a hook
   const [data, setData] = useState({});
+  const [reorg_data, setReorgData] = useState({});
+  const [wait_time, setWaitTime] = useState(0);
 
   async function getData(){
     const res = await fetch(props.request);
@@ -63,25 +62,71 @@ const JsonHook = (props) => {
       reorgs.timestamps.push(data[i].event.added_blocks.slice(-1)[0].receipt_time);
     };
 
-    // console.log(reorgs);
-    return reorgs;
-
-  }
+    console.log(reorgs);
+    setWaitTime(5000);
+    setReorgData(reorgs);
+  };
 
   useEffect(() => {
-    // getData();
-    // getReorgs(data);
+
+    // lifecycle method
+    const timer = setTimeout( () => {
+      getData().then(() => getReorgs);
+      // getReorgs();
+    }, wait_time);
+
+    // when unmounted, clear the interval
+    return () => clearTimeout(timer);
   });
 
-  getData();
-  // return the table here or something
-  return <div>{JSON.stringify(getReorgs())}</div>;
+  return <ReorgTable data = {reorg_data} />;
 };
 
-const Table = (props) => {
+const ReorgTable = (props) => {
   /*
    * Generates the table based on the data passed into it.
    */
-}
+
+  const [jsx_data, changeData] = useState([]);
+
+  useEffect(() => {
+    generate();
+  }, []);
+
+  function generate(){
+    /*
+     * Generates the JSX array.
+     */
+
+    console.log(props.data);
+    let table_array = [
+      <tr key="header-row">
+        <th key="time">Time</th>
+        <th key="name">Name</th>
+        <th key="length">Length of Reorg</th>
+      </tr>
+    ];
+
+    for (let row = 0; row < props.data.length; row++){
+      table_array.push(
+          <tr key="header_{row}">
+            <td key="timestamp_{row}">{props.data.timestamps[row]}</td>
+            <td key="name_{row}">{props.data.names[row]}</td>
+            <td key="reorg_{row}">{props.data.reorg_length[row]}</td>
+          </tr>
+      );
+    };
+
+    changeData(table_array);
+  };
+
+  // generate();
+  return (
+      <table>
+        <tbody>{jsx_data}</tbody>
+      </table>
+  );
+
+};
 
 export default App;
