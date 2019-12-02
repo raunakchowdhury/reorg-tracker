@@ -17,7 +17,9 @@ const ReorgTable = (props) => {
         // console.log(props.data[row].timestamp, props.data[row].name, props.data[row].reorg_length);
         jsx_data.push(
             <tr key={`header_${row}`}>
-                <td key={`timestamp_${row}`}>{`${new Date(props.data[row].timestamp).toLocaleDateString("en-US")} ${new Date(props.data[row].timestamp).toLocaleTimeString("en-US")}`}</td>
+                <td key={`timestamp_${row}`}> {`${new Date(props.data[row].timestamp).toLocaleDateString("en-US")}
+                ${new Date(props.data[row].timestamp).toLocaleTimeString("en-US")}`}</td>
+                {/*    {props.data[row].timestamp}</td>*/}
                 <td key={`name_${row}`}>{props.data[row].name}</td>
                 <td key={`reorg_${row}`}>{props.data[row].reorg_length}</td>
             </tr>

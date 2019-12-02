@@ -17,7 +17,7 @@ const App = () => {
       {/*    Learn React*/}
       {/*  </a>*/}
       {/*</header>*/}
-      <ReorgJson request="http://hubris.media.mit.edu:5000/reorgs?limit=50"/>
+      <ReorgJson number = "50" />
     </div>
   );
 };

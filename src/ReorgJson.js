@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+
 import ReorgTable from "./ReorgTable";
+import ReorgGraph from "./ReorgGraph";
 
 
 const ReorgJson = (props) => {
@@ -9,6 +11,8 @@ const ReorgJson = (props) => {
      */
 
     const [reorg_data, setReorgData] = useState([]);
+    // keep track of window height
+
 
     async function getData() {
         /*
@@ -21,21 +25,30 @@ const ReorgJson = (props) => {
          * ]
          */
 
-        const res = await fetch(props.request);
+        const url = `http://hubris.media.mit.edu:5000/reorgs?limit=${props.number}`;
+        // const url = `http://127.0.0.1:5000/${props.number}`;
+        console.log(url);
+        const res = await fetch(url);
         let data = await res.json();
 
+        // double spends; potential issue with latency
+        // const
 
         let reorgs = [];
 
         for (let i = 0; i < data.length; i++){
+            let timestamp = data[i].event.added_blocks.slice(-1)[0].receipt_time * 1000;
+            let parsed_time = `${new Date(timestamp).toLocaleDateString("en-US")} 
+                ${new Date(timestamp).toLocaleTimeString("en-US")}`;
+
             reorgs.push({
                 id: i,
                 name: data[i].currency_name,
                 reorg_length: data[i].event.removed_blocks.length,
-                timestamp: data[i].event.added_blocks.slice(-1)[0].receipt_time * 1000
+                timestamp: timestamp
             });
         };
-
+        // console.log(reorgs);
         setReorgData(reorgs);
     };
 
@@ -56,7 +69,10 @@ const ReorgJson = (props) => {
     return (
         // add multiple elements to DOM
         <>
-            <div key={reorg_data}>
+            <div key='reorg_graph' style={{ height: '40em'}}>
+                <ReorgGraph data = {reorg_data}/>
+            </div>
+            <div key='reorg_table'>
                 <ReorgTable data = {reorg_data} />
             </div>
         </>
