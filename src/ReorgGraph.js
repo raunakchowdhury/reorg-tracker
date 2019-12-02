@@ -20,7 +20,8 @@ const ReorgGraph = (props) => {
     let data = props.data.map((entry) => {
         return {
             x: entry.timestamp,
-            y: entry.reorg_length
+            y: entry.reorg_length,
+            name: entry.name,
         };
     });
 
@@ -33,10 +34,11 @@ const ReorgGraph = (props) => {
     console.log(data);
 
     return (
-      <FlexibleXYPlot>
+      <FlexibleXYPlot xType="time">
           {/*<VerticalGridLines />*/}
           {/*<HorizontalGridLines />*/}
           <XAxis
+              tickFormat = {d => new Date(d).toLocaleTimeString("en-US")}
               tickLabelAngle={45}
           />
           <YAxis />
@@ -49,31 +51,16 @@ const ReorgGraph = (props) => {
               onValueMouseOut={datapoint => setHovered(null)}
           />
 
-          {/*{data.map((ele) =>*/}
-          {/*    <Hint value={ele}></Hint>,*/}
-          {/*)}*/}
-
           {hovered ?
-              <Hint value={hovered}></Hint>
+              <Hint value={hovered}>
+                  Currency: {hovered.name}
+                  <br/>
+                  Reorg Length: {hovered.y}
+                  <br/>
+                  Timestamp of Reorg: {new Date(hovered.x).toLocaleDateString("en-US")} {new Date(hovered.x).toLocaleTimeString("en-US")}
+              </Hint>
               : null }
-
-          {/*<Hint value={}>*/}
-
-          {/*</Hint>*/}
-
-          {/*<ChartLabel*/}
-          {/*    text='Time'*/}
-          {/*    className="alt-x-label"*/}
-          {/*    xPercent={0.9}*/}
-          {/*    yPercent={0.65}*/}
-          {/*    style={{*/}
-          {/*        transform: 'rotate(90)',*/}
-          {/*        textAnchor: 'end'*/}
-          {/*    }}*/}
-          {/*/>*/}
-          {/*<Hint>*/}
-          {/*    */}
-          {/*</Hint>*/}
+              
       </FlexibleXYPlot>
     );
 };
